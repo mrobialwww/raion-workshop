@@ -2,13 +2,18 @@
 import 'package:flutter/foundation.dart';
 import '../../data/models/destination.dart';
 import '../../data/repositories/destination_repository.dart';
+import '../../data/repositories/trip_repository.dart';
 
 enum StatusData { memuat, berhasil, gagal }
 
 class DestinationListViewModel extends ChangeNotifier {
-  DestinationListViewModel({required this.repository});
+  DestinationListViewModel({
+    required this.repository,
+    required this.tripRepository,
+  });
 
   final DestinationRepository repository;
+  final TripRepository tripRepository;
 
   StatusData _status = StatusData.memuat;
   List<Destination> _semua = [];
@@ -18,7 +23,12 @@ class DestinationListViewModel extends ChangeNotifier {
   StatusData get status => _status;
   String get pesanError => _pesanError;
 
-  // Logika nyaringnya di sini, bukan di dalam build()
+  // Dipakai buat angka di pojok kanan atas
+  int get jumlahRencana => tripRepository.jumlah;
+
+  // Dipakai buat nentuin tombolnya masih bisa dipencet atau udah jadi centang
+  bool sudahDirencanakan(String id) => tripRepository.sudahAda(id);
+
   List<Destination> get destinasi {
     if (_kataKunci.isEmpty) return _semua;
 
@@ -46,6 +56,15 @@ class DestinationListViewModel extends ChangeNotifier {
 
   void cari(String kataKunci) {
     _kataKunci = kataKunci;
-    notifyListeners();   // nggak manggil Service lagi, datanya udah ada
+    notifyListeners();
   }
+
+  void tambahKeRencana(Destination destinasi) {
+    tripRepository.tambah(destinasi);
+    notifyListeners();
+  }
+
+  // Dipanggil pas balik dari layar Rencana Perjalanan,
+  // biar angka dan centangnya ikut ngitung ulang
+  void segarkan() => notifyListeners();
 }
