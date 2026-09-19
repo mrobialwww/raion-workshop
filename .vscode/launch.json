@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "name": "raion_workshop (Flutter V2231)",
+            "program": "lib/main.dart",
+            "deviceId": "10DD7Z08250018M",
+            "request": "launch",
+            "type": "dart"
+        }
+    ]
+}

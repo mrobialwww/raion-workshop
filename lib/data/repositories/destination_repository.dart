@@ -1,5 +1,6 @@
 // lib/data/repositories/destination_repository.dart
-import '../models/destination.dart';
+import 'dart:io';
+import '../models/trip_destination.dart';
 import '../services/destination_local_service.dart';
 
 class DestinationRepository {
@@ -7,16 +8,33 @@ class DestinationRepository {
 
   final DestinationLocalService service;
 
-  // Cache sederhana. Ini tugas Repository, bukan Service.
-  List<Destination>? _cache;
+  Future<List<TripDestination>> ambilDestinasi(String tripPlanId) =>
+      service.fetchDestinations(tripPlanId);
 
-  Future<List<Destination>> ambilDestinasi({bool paksaMuatUlang = false}) async {
-    if (_cache != null && !paksaMuatUlang) {
-      return _cache!;
-    }
+  Future<TripDestination> tambahDestinasi(TripDestination item) =>
+      service.createDestination(item);
 
-    final hasil = await service.ambilDestinasi();
-    _cache = hasil;
-    return hasil;
+  Future<void> updateStatus(String id, String status) =>
+      service.updateDestinationStatus(id, status);
+
+  Future<void> hapusDestinasi(String id) => service.deleteDestination(id);
+
+  // Fungsi penggabung (Orchestrator) untuk Storage & Database
+  Future<String> uploadAndUpdateFoto({
+    required String userId,
+    required String destinationId,
+    required File file,
+  }) async {
+    // 1. Kirim ke Storage Service
+    final url = await service.uploadPhoto(
+      userId: userId,
+      destinationId: destinationId,
+      imagefile: file,
+    );
+    // 2. Simpan URL-nya ke Database Service
+    await service.updateDestinationPhoto(destinationId, url);
+    return url;
   }
+
+  Future<void> deletePhoto(String path) async => service.deletePhoto(path);
 }

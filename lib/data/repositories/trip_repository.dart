@@ -1,25 +1,16 @@
 // lib/data/repositories/trip_repository.dart
-import '../models/destination.dart';
+import '../models/trip_plan.dart';
+import '../services/trip_supabase_service.dart';
 
 class TripRepository {
-  // Satu-satunya tempat data rencana perjalanan disimpan.
-  final List<Destination> _rencana = [];
+  TripRepository({required this.supabaseService});
 
-  // Dikasih versi yang nggak bisa diubah, biar View nggak bisa
-  // nambah atau ngapus data langsung.
-  List<Destination> ambilRencana() => List.unmodifiable(_rencana);
+  final TripSupabaseService supabaseService;
 
-  int get jumlah => _rencana.length;
+  Future<List<TripPlan>> ambilTripPlans() => supabaseService.fetchTripPlans();
 
-  bool sudahAda(String id) => _rencana.any((d) => d.id == id);
+  Future<TripPlan> buatTripPlan(String title) =>
+      supabaseService.createTripPlan(title);
 
-  void tambah(Destination destinasi) {
-    if (!sudahAda(destinasi.id)) {
-      _rencana.add(destinasi);
-    }
-  }
-
-  void hapus(String id) {
-    _rencana.removeWhere((d) => d.id == id);
-  }
+  Future<void> hapusTripPlan(String id) => supabaseService.deleteTripPlan(id);
 }
