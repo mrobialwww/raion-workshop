@@ -21,17 +21,16 @@ class OtpVerificationViewModel extends ChangeNotifier {
   AuthStatus get status => _status;
   String get pesanError => _pesanError;
 
-  /// Verifikasi kode OTP 6 digit yang dimasukkan pengguna
+  /// Verifikasi kode OTP 8 digit yang dimasukkan pengguna
   Future<bool> verifyOtp(String otpCode) async {
     _status = AuthStatus.loading;
     _pesanError = '';
     notifyListeners();
 
     try {
-      await authRepository.verifySignUpOtp(email: email, otpCode: otpCode);
-      _status = AuthStatus.idle;
-      notifyListeners();
-      return true;
+      // TODO: Panggil authRepository.verifySignUpOtp() dengan email dan otpCode
+      // Lalu kembalikan true jika berhasil
+      throw UnimplementedError();
     } on AuthException catch (e) {
       _pesanError = e.message;
       _status = AuthStatus.error;

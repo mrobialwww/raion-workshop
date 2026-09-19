@@ -32,11 +32,9 @@ class RegisterViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Kirim OTP verifikasi ke email (password disertakan sesuai panduan)
-      await authRepository.sendSignUpOtp(email: email, password: password);
-      _status = AuthStatus.idle;
-      notifyListeners();
-      return true;
+      // TODO: Panggil authRepository.sendSignUpOtp() dengan email dan password
+      // Lalu kembalikan true jika berhasil
+      throw UnimplementedError();
     } on AuthException catch (e) {
       _pesanError = e.message;
       _status = AuthStatus.error;

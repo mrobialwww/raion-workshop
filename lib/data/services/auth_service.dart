@@ -11,11 +11,8 @@ class AuthService {
     required String password,
   }) async {
     try {
-      await _client.auth.signUp(email: email, password: password);
-
-      debugPrint('Kode OTP verifikasi pendaftaran berhasil dikirim ke: $email');
+      // TODO: Gunakan _client.auth.signUp() untuk mendaftarkan user
     } on AuthException catch (e) {
-      // Menangkap error jika email sudah terdaftar atau format salah
       debugPrint('Gagal pendaftaran: ${e.message}');
       rethrow;
     } catch (e) {
@@ -30,14 +27,8 @@ class AuthService {
     required String otpCode,
   }) async {
     try {
-      final response = await _client.auth.verifyOTP(
-        email: email,
-        token: otpCode.trim(),
-        type: OtpType.email,
-      );
-
-      debugPrint('Verifikasi berhasil! User ID: ${response.user?.id}');
-      return response;
+      // TODO: Gunakan _client.auth.verifyOTP() dengan OtpType.email
+      throw UnimplementedError();
     } on AuthException catch (e) {
       debugPrint('Kode OTP salah atau kadaluarsa: ${e.message}');
       rethrow;
@@ -48,11 +39,11 @@ class AuthService {
   }
 
   Future<void> signIn({required String email, required String password}) async {
-    await _client.auth.signInWithPassword(email: email, password: password);
+    // TODO: Gunakan _client.auth.signInWithPassword()
   }
 
   Future<void> signOut() async {
-    await _client.auth.signOut();
+    // TODO: Gunakan _client.auth.signOut()
   }
 
   // Ambil data user yg sedang login

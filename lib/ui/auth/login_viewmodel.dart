@@ -29,8 +29,7 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await authRepository.signIn(email: email, password: password);
-      // AuthWrapper otomatis mendeteksi session baru via stream
+      // TODO: Panggil authRepository.signIn() dengan email dan password
     } on AuthException catch (e) {
       _pesanError = e.message;
       _status = AuthStatus.error;

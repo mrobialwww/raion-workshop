@@ -12,28 +12,13 @@ class LiveTripBoardViewModel extends ChangeNotifier {
   final _client = Supabase.instance.client;
   RealtimeChannel? _channel;
 
-  List<TripDestination> _destinations = [];
-  final List<String> _recentActivity = [];
+  List<TripDestination> destinations = [];
+  final List<String> recentActivity = [];
   bool isLoading = true;
 
-  // UI mengakses daftar destinasi melalui getter ini
-  List<TripDestination> get destinations => _destinations;
-
-  // UI mengakses riwayat log aktivitas melalui getter ini
-  List<String> get recentActivity => _recentActivity;
-
   Future<void> init() async {
-    // Muat data awal
-    final data = await _client
-        .from('trip_plan_items')
-        .select()
-        .eq('trip_plan_id', tripPlanId)
-        .order('order_index', ascending: true);
-
-    _destinations =
-        (data as List).map((e) => TripDestination.fromMap(e)).toList();
-    isLoading = false;
-    notifyListeners();
+    // TODO: Ambil data awal dari tabel 'trip_plan_items' (filter by tripPlanId, order by order_index),
+    // convert ke List<TripDestination>, set isLoading = false, lalu notifyListeners()
 
     // Subscribe ke Realtime
     // 1. Saat teman menambahkan destinasi baru
@@ -47,20 +32,8 @@ class LiveTripBoardViewModel extends ChangeNotifier {
               schema: 'public',
               table: 'trip_plan_items',
               callback: (payload) {
-                // Abaikan jika bukan milik trip plan ini
-                if (payload.newRecord['trip_plan_id'] != tripPlanId) return;
-
-                // Ubah data mentah dari Supabase menjadi objek Dart
-                final item = TripDestination.fromMap(payload.newRecord);
-
-                // Tambahkan ke memori lokal
-                _destinations.add(item);
-
-                // Catat ke riwayat aktivitas
-                _tambahActivity('Destinasi baru ditambahkan');
-
-                // Render ulang layar
-                notifyListeners();
+                // TODO: Cek `trip_plan_id`, ubah payload.newRecord menjadi TripDestination,
+                // tambahkan ke destinations, catat aktivitas, lalu notifyListeners()
               },
             )
             .onPostgresChanges(
@@ -68,22 +41,8 @@ class LiveTripBoardViewModel extends ChangeNotifier {
               schema: 'public',
               table: 'trip_plan_items',
               callback: (payload) {
-                // Abaikan jika bukan milik trip plan ini
-                if (payload.newRecord['trip_plan_id'] != tripPlanId) return;
-
-                // Ubah data mentah dari Supabase menjadi objek Dart
-                final updated = TripDestination.fromMap(payload.newRecord);
-
-                // Cari ada di urutan ke-berapa data usang tersebut di HP kita
-                final idx = _destinations.indexWhere((d) => d.id == updated.id);
-
-                // Timpa dengan data baru
-                if (idx != -1) {
-                  _destinations[idx] = updated;
-                }
-
-                _tambahActivity('Destinasi diperbarui');
-                notifyListeners();
+                // TODO: Cek `trip_plan_id`, ubah payload.newRecord menjadi TripDestination,
+                // cari indexnya, timpa data lama, lalu notifyListeners()
               },
             )
             .onPostgresChanges(
@@ -91,22 +50,17 @@ class LiveTripBoardViewModel extends ChangeNotifier {
               schema: 'public',
               table: 'trip_plan_items',
               callback: (payload) {
-                // OldRecord adalah jejak rekaman dari baris yang baru saja dihanguskan dari database. biasanya cuma { "id": "..." }.
-                final id = payload.oldRecord['id'] as String?;
-
-                // Cari destinasi dengan ID tersebut di memori lokal kita, lalu hapus dari list
-                if (id != null) _destinations.removeWhere((d) => d.id == id);
-
-                _tambahActivity('Destinasi dihapus');
-                notifyListeners();
+                // TODO: Ambil id dari payload.oldRecord, cari destinasi berdasarkan id,
+                // hapus dari destinations, lalu notifyListeners()
               },
             )
             .subscribe();
   }
 
+  // Menambahkan ke daftar riwayat aktivitas
   void _tambahActivity(String pesan) {
-    _recentActivity.insert(0, pesan);
-    if (_recentActivity.length > 5) _recentActivity.removeLast();
+    recentActivity.insert(0, pesan);
+    if (recentActivity.length > 5) recentActivity.removeLast();
   }
 
   @override

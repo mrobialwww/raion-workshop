@@ -159,50 +159,10 @@ class DestinationListViewModel extends ChangeNotifier {
   // Fungsi untuk mengunggah foto ke destinasi tertentu
   Future<void> uploadFoto(String destinationId) async {
     try {
-      // 1. Membuka galeri ponsel supaya pengguna bisa memilih gambar
-      final picker = ImagePicker();
-      final picked = await picker.pickImage(source: ImageSource.gallery);
-
-      // Kalau pengguna membatalkan pilihan (tutup galeri), proses berhenti di sini
-      if (picked == null) return;
-
-      // 2. Tampilkan efek loading di layar
-      _status = StatusData.memuat;
-      notifyListeners();
-
-      // 3. Menyiapkan wujud asli file gambar tsb dan mencari tahu ID siapa yang klik (user saat ini)
-      final file = File(picked.path);
-      final userId = authRepository.getCurrentUserId()!;
-
-      // 4. Mengirimkan gambar ke Storage DAN menyimpan URL-nya ke Database sekaligus
-      final url = await repository.uploadAndUpdateFoto(
-        userId: userId,
-        destinationId: destinationId,
-        file: file,
-      );
-
-      // 5. Mencari di mana urutan data lama di memori HP, lalu menggantinya dengan data baru + sisipan URL foto
-      // Ini agar fotonya langsung muncul di tampilan HP tanpa perlu di-refresh ulang dari awal
-      final idx = _semua.indexWhere((d) => d.id == destinationId);
-      if (idx != -1) {
-        _semua[idx] = TripDestination(
-          id: _semua[idx].id,
-          tripPlanId: _semua[idx].tripPlanId,
-          name: _semua[idx].name,
-          daerah: _semua[idx].daerah,
-          hargaRupiah: _semua[idx].hargaRupiah,
-          status: _semua[idx].status,
-          photoUrl: url,
-          orderIndex: _semua[idx].orderIndex,
-          createdAt: _semua[idx].createdAt,
-        );
-      }
-
-      // 6. Beri tahu UI bahwa semuanya sukses dan matikan layar loading
-      _status = StatusData.berhasil;
-      notifyListeners();
+      // TODO: Buka galeri (ImagePicker), tampilkan loading, lalu upload foto via repository.uploadAndUpdateFoto()
+      // Setelah berhasil, update _semua[idx] dengan photoUrl baru dan notifyListeners()
     } catch (e) {
-      // 7. Kalau internet mati atau gagal proses, tangkap pesan errornya!
+      // Kalau internet mati atau gagal proses, tangkap pesan errornya!
       _pesanError = 'Gagal upload foto';
       _status = StatusData.gagal;
       notifyListeners();
